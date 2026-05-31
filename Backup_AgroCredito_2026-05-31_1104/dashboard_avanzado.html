@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroCrédito Colombia - Dashboard Interactivo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root { --bg: #070b12; --surface: #111827; --surface2: #1f2937; --primary: #10b981; --primary-hover: #34d399; --primary-rgb: 16, 185, 129; --text: #f3f4f6; --text-muted: #9ca3af; --accent: #3b82f6; --warning: #f59e0b; --danger: #ef4444; --purple: #8b5cf6; --pink: #ec4899; --cyan: #06b6d4; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); --font-heading: 'Outfit', sans-serif; --font-body: 'Inter', sans-serif; --shadow: 0 20px 40px -10px rgba(0,0,0,0.5); --radius: 16px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+        .dashboard { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .header-info { text-align: right; color: var(--text-muted); font-size: 0.9rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+        .kpi-card { background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+        .kpi-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(var(--primary-rgb), 0.1); color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; margin-bottom: 16px; }
+        .kpi-value { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+        .kpi-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .kpi-change { font-size: 0.8rem; margin-top: 8px; }
+        .kpi-change.positive { color: var(--primary); }
+        .kpi-change.negative { color: var(--danger); }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+        .chart-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 24px; }
+        .chart-title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .chart-title i { color: var(--primary); }
+        .full-width { grid-column: 1 / -1; }
+        .map-container { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 24px; margin-bottom: 32px; }
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+        .dept-chip { background: var(--surface2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 8px; text-align: center; font-size: 0.8rem; transition: var(--transition); cursor: pointer; }
+        .dept-chip:hover { border-color: var(--primary); background: rgba(var(--primary-rgb), 0.1); }
+        .dept-chip .name { color: var(--text); font-weight: 500; display: block; margin-bottom: 4px; }
+        .dept-chip .value { color: var(--primary); font-weight: 700; font-size: 1rem; }
+        .footer { text-align: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); font-size: 0.85rem; }
+        @media (max-width: 968px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .charts-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="header">
+        <div class="logo"><i class="fa-solid fa-seedling"></i> AgroCrédito Colombia</div>
+        <div class="header-info">
+            <div>Dashboard Nacional de Créditos Rurales</div>
+            <div>Actualizado: Mayo 2026 | 2,000 Registros</div>
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <div class="kpi-value">2,000</div>
+            <div class="kpi-label">Total Créditos</div>
+            <div class="kpi-change positive">+12% vs 2025</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-check-circle"></i></div>
+            <div class="kpi-value">1,340</div>
+            <div class="kpi-label">Créditos Aprobados</div>
+            <div class="kpi-change positive">67% aprobación</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-coins"></i></div>
+            <div class="kpi-value">$127.5B</div>
+            <div class="kpi-label">Monto Total (COP)</div>
+            <div class="kpi-change positive">+18% inversión</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-percentage"></i></div>
+            <div class="kpi-value">16.4%</div>
+            <div class="kpi-label">Tasa Promedio E.A.</div>
+            <div class="kpi-change negative">-0.8pp vs 2025</div>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div class="chart-title"><i class="fa-solid fa-map-location-dot"></i> Créditos por Departamento</div>
+        <div class="dept-grid" id="deptGrid"></div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-chart-pie"></i> Distribución por Sector</div>
+            <canvas id="chartSector"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-chart-bar"></i> Tasa Promedio por Sector</div>
+            <canvas id="chartTasa"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-chart-line"></i> Evolución de Créditos (2019-2026)</div>
+            <canvas id="chartEvolucion"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-microchip"></i> Impacto de Tecnología</div>
+            <canvas id="chartTech"></canvas>
+        </div>
+        <div class="chart-card full-width">
+            <div class="chart-title"><i class="fa-solid fa-wheat-awn"></i> Producción por Sector (Toneladas/Año)</div>
+            <canvas id="chartProduccion"></canvas>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-users"></i> Edad de Agricultores</div>
+            <canvas id="chartEdad"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-sun"></i> Adopción de Energía Solar</div>
+            <canvas id="chartSolar"></canvas>
+        </div>
+    </div>
+
+    <div class="footer">
+        AgroCrédito Colombia © 2026 | Seguridad Alimentaria y Créditos Rurales Inteligentes | Licencia MIT
+    </div>
+</div>
+
+<script>
+    const colors = { primary: '#10b981', accent: '#3b82f6', warning: '#f59e0b', danger: '#ef4444', purple: '#8b5cf6', pink: '#ec4899', cyan: '#06b6d4' };
+
+    const departamentos = [
+        { name: 'Antioquia', value: 180 }, { name: 'Atlántico', value: 120 }, { name: 'Bolívar', value: 95 },
+        { name: 'Boyacá', value: 110 }, { name: 'Caldas', value: 85 }, { name: 'Cauca', value: 75 },
+        { name: 'Cesar', value: 70 }, { name: 'Córdoba', value: 65 }, { name: 'Cundinamarca', value: 150 },
+        { name: 'Huila', value: 90 }, { name: 'La Guajira', value: 55 }, { name: 'Magdalena', value: 60 },
+        { name: 'Meta', value: 100 }, { name: 'Nariño', value: 80 }, { name: 'N. Santander', value: 70 },
+        { name: 'Quindío', value: 45 }, { name: 'Risaralda', value: 50 }, { name: 'Santander', value: 95 },
+        { name: 'Sucre', value: 40 }, { name: 'Tolima', value: 75 }, { name: 'Valle', value: 130 },
+        { name: 'Arauca', value: 35 }, { name: 'Caquetá', value: 30 }, { name: 'Putumayo', value: 25 }
+    ];
+
+    const grid = document.getElementById('deptGrid');
+    departamentos.forEach(d => {
+        const chip = document.createElement('div');
+        chip.className = 'dept-chip';
+        chip.innerHTML = `<span class="name">${d.name}</span><span class="value">${d.value}</span>`;
+        grid.appendChild(chip);
+    });
+
+    new Chart(document.getElementById('chartSector'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Agricultura', 'Ganadería', 'Piscicultura', 'Porcícola', 'Avicultura', 'Energía Solar', 'Tecnología'],
+            datasets: [{ data: [600, 400, 300, 200, 160, 140, 200], backgroundColor: [colors.primary, colors.accent, colors.cyan, colors.warning, colors.pink, colors.purple, colors.danger], borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#9ca3af', padding: 12 } } } }
+    });
+
+    new Chart(document.getElementById('chartTasa'), {
+        type: 'bar',
+        data: {
+            labels: ['Agricultura', 'Ganadería', 'Piscicultura', 'Porcícola', 'Avicultura', 'Solar', 'Tecnología'],
+            datasets: [{ label: 'Tasa % E.A.', data: [16.2, 15.8, 17.1, 16.5, 15.9, 14.8, 14.2], backgroundColor: [colors.primary, colors.accent, colors.cyan, colors.warning, colors.pink, colors.purple, colors.danger], borderRadius: 8 }]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('chartEvolucion'), {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+            datasets: [
+                { label: 'Créditos Aprobados', data: [450, 520, 610, 720, 850, 980, 1150, 1340], borderColor: colors.primary, backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 },
+                { label: 'Monto (Mds COP)', data: [35, 42, 55, 68, 85, 100, 118, 127], borderColor: colors.accent, backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }
+            ]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { labels: { color: '#9ca3af' } } } }
+    });
+
+    new Chart(document.getElementById('chartTech'), {
+        type: 'bar',
+        data: {
+            labels: ['0 Tech', '1 Tech', '2 Tech', '3 Tech', '4 Tech', '5 Tech'],
+            datasets: [
+                { label: 'Tasa Promedio', data: [19.2, 17.8, 16.5, 15.3, 14.1, 13.2], backgroundColor: colors.primary, borderRadius: 8 },
+                { label: 'Nro Agricultores', data: [180, 420, 520, 450, 280, 150], backgroundColor: colors.accent, borderRadius: 8 }
+            ]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { labels: { color: '#9ca3af' } } } }
+    });
+
+    new Chart(document.getElementById('chartProduccion'), {
+        type: 'bar',
+        data: {
+            labels: ['Agricultura', 'Ganadería', 'Piscicultura', 'Porcícola', 'Avicultura'],
+            datasets: [
+                { label: 'Producción (Ton)', data: [6500, 3200, 1800, 1200, 950], backgroundColor: colors.primary, borderRadius: 8 },
+                { label: 'Familias Alimentadas', data: [325000, 256000, 180000, 108000, 114000], backgroundColor: colors.warning, borderRadius: 8, yAxisID: 'y1' }
+            ]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Toneladas', color: '#9ca3af' } }, y1: { position: 'right', ticks: { color: '#9ca3af' }, grid: { display: false }, title: { display: true, text: 'Familias', color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { labels: { color: '#9ca3af' } } } }
+    });
+
+    new Chart(document.getElementById('chartEdad'), {
+        type: 'bar',
+        data: {
+            labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75'],
+            datasets: [{ label: 'Agricultores', data: [180, 520, 480, 420, 280, 120], backgroundColor: colors.cyan, borderRadius: 8 }]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('chartSolar'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Con Energía Solar', 'Sin Energía Solar'],
+            datasets: [{ data: [800, 1200], backgroundColor: [colors.primary, colors.danger], borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 16 } } } }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AgroCrédito Colombia - Plataforma de créditos rurales inteligentes para garantizar la seguridad alimentaria de Colombia y el mundo.">
+    <title>AgroCrédito Colombia | Seguridad Alimentaria y Créditos Rurales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #070b12;
+            --surface: #111827;
+            --surface2: #1f2937;
+            --primary: #10b981;
+            --primary-hover: #34d399;
+            --primary-rgb: 16, 185, 129;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; overflow-x: hidden; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(7,11,18,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav { max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 28px; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: var(--transition); }
+        .nav-links a:hover { color: var(--primary); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 30px; font-family: var(--font-heading); font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer; transition: var(--transition); border: none; }
+        .btn-primary { background: var(--primary); color: var(--bg); box-shadow: 0 4px 20px rgba(var(--primary-rgb),0.3); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--surface2); }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+        .hero { position: relative; padding: 160px 20px 100px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at 30% 20%, rgba(var(--primary-rgb),0.15) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(59,130,246,0.08) 0%, transparent 50%); }
+        .hero-badge { background: rgba(var(--primary-rgb),0.1); border: 1px solid rgba(var(--primary-rgb),0.3); color: var(--primary); padding: 6px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 24px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        .hero h1 { font-family: var(--font-heading); font-size: 4.2rem; font-weight: 800; line-height: 1.05; margin-bottom: 20px; max-width: 900px; }
+        .hero h1 span { background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--text-muted); font-size: 1.2rem; max-width: 700px; margin-bottom: 40px; }
+        .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .hero-stats { display: flex; gap: 60px; margin-top: 60px; }
+        .hero-stat-num { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+        .hero-stat-label { font-size: 0.85rem; color: var(--text-muted); }
+
+        section { max-width: 1200px; margin: 0 auto; padding: 80px 20px; }
+        .section-title { text-align: center; margin-bottom: 60px; }
+        .section-title h2 { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; }
+        .section-title h2 span { color: var(--primary); }
+        .section-title p { color: var(--text-muted); font-size: 1.05rem; max-width: 600px; margin: 0 auto; }
+
+        .sectors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+        .sector-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 32px; text-align: center; transition: var(--transition); position: relative; overflow: hidden; }
+        .sector-card::before { content:''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: var(--transition); }
+        .sector-card:hover { transform: translateY(-5px); border-color: rgba(var(--primary-rgb),0.3); }
+        .sector-card:hover::before { opacity: 1; }
+        .sector-icon { font-size: 3rem; margin-bottom: 16px; }
+        .sector-card h3 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 8px; }
+        .sector-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+        .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 60px; }
+        .impact-card { background: linear-gradient(135deg, #064e3b, #065f46); border-radius: var(--radius); padding: 32px; text-align: center; }
+        .impact-num { font-family: var(--font-heading); font-size: 2.8rem; font-weight: 800; color: #34d399; }
+        .impact-label { font-size: 0.9rem; color: #a7f3d0; margin-top: 4px; }
+
+        .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .mission-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 40px; }
+        .mission-card h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 16px; color: var(--primary); }
+        .mission-card p { color: var(--text-muted); margin-bottom: 16px; }
+        .mission-card ul { list-style: none; }
+        .mission-card li { display: flex; align-items: center; gap: 10px; color: var(--text-muted); margin-bottom: 10px; font-size: 0.95rem; }
+        .mission-card li i { color: var(--primary); }
+
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .tech-card { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 32px; transition: var(--transition); }
+        .tech-card:hover { border-color: rgba(var(--primary-rgb),0.3); transform: translateY(-3px); }
+        .tech-card h4 { font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 12px; color: var(--primary); }
+        .tech-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
+        .tech-card ul { list-style: none; }
+        .tech-card li { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 6px; padding-left: 16px; position: relative; }
+        .tech-card li::before { content: '•'; color: var(--primary); position: absolute; left: 0; }
+
+        .chart-container { background: var(--surface); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius); padding: 32px; margin-top: 40px; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+        footer { background: #060913; border-top: 1px solid rgba(255,255,255,0.05); padding: 50px 20px; text-align: center; margin-top: 80px; }
+        .footer-logo { font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .footer-links { display: flex; justify-content: center; gap: 28px; list-style: none; margin-bottom: 24px; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-text { color: #6b7280; font-size: 0.85rem; }
+
+        @media (max-width: 968px) {
+            .hero h1 { font-size: 2.6rem; }
+            .hero-stats { flex-direction: column; gap: 24px; }
+            .impact-grid { grid-template-columns: 1fr 1fr; }
+            .mission-grid { grid-template-columns: 1fr; }
+            .chart-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav">
+        <a href="#" class="logo"><i class="fa-solid fa-seedling"></i> AgroCrédito</a>
+        <ul class="nav-links">
+            <li><a href="#mision">Misión</a></li>
+            <li><a href="#sectores">Sectores</a></li>
+            <li><a href="#tecnologia">Tecnología</a></li>
+            <li><a href="#impacto">Impacto</a></li>
+            <li><a href="#datos">Datos</a></li>
+        </ul>
+        <a href="http://localhost:8510" class="btn btn-primary" target="_blank"><i class="fa-solid fa-arrow-right"></i> Abrir Plataforma</a>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-badge">SEGURIDAD ALIMENTARIA + INTELIGENCIA ARTIFICIAL</div>
+    <h1>Alimentando a Colombia con <span>Créditos Inteligentes</span> y Amor por el Campo</h1>
+    <p>Conectamos a los agricultores colombianos con los mejores créditos rurales. Volvamos al campo, cultivemos nuestro futuro, y llevemos alimentos frescos a la mesa de cada familia colombiana y del mundo.</p>
+    <div class="hero-btns">
+        <a href="http://localhost:8510" class="btn btn-primary" target="_blank"><i class="fa-solid fa-magnifying-glass"></i> Consultar Mi Crédito</a>
+        <a href="#mision" class="btn btn-outline"><i class="fa-solid fa-play"></i> Conoce Nuestra Misión</a>
+    </div>
+    <div class="hero-stats">
+        <div><div class="hero-stat-num">2,000+</div><div class="hero-stat-label">Agricultores Registrados</div></div>
+        <div><div class="hero-stat-num">7</div><div class="hero-stat-label">Sectores Productivos</div></div>
+        <div><div class="hero-stat-num">29</div><div class="hero-stat-label">Departamentos</div></div>
+        <div><div class="hero-stat-num">89.2%</div><div class="hero-stat-label">Precisión del Modelo IA</div></div>
+    </div>
+</section>
+
+<section id="mision">
+    <div class="section-title">
+        <h2>Nuestra <span>Misión</span></h2>
+        <p>Transformar el campo colombiano con tecnología, crédito justo y amor por la tierra.</p>
+    </div>
+    <div class="mission-grid">
+        <div class="mission-card">
+            <h3>🌾 El Problema</h3>
+            <p>Los colombianos abandonan el campo por falta de oportunidades. Los créditos son caros e inaccesibles. La producción de alimentos no alcanza para alimentar a nuestras familias.</p>
+            <ul>
+                <li><i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> Tasas de interés prohibitivas para pequeños agricultores</li>
+                <li><i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> Falta de tecnología moderna en el campo</li>
+                <li><i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> Jóvenes sin incentivos para volver a cultivar</li>
+                <li><i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> Importación excesiva de alimentos</li>
+            </ul>
+        </div>
+        <div class="mission-card">
+            <h3>🎯 Nuestra Solución</h3>
+            <p>Usamos Inteligencia Artificial para predecir tasas justas de crédito, conectamos agricultores con subsidios, y promovemos la tecnología rural para producir más y mejor.</p>
+            <ul>
+                <li><i class="fa-solid fa-circle-check"></i> Consulta de crédito con cédula en segundos</li>
+                <li><i class="fa-solid fa-circle-check"></i> Modelo IA con 89.2% de precisión</li>
+                <li><i class="fa-solid fa-circle-check"></i> 7 sectores productivos cubiertos</li>
+                <li><i class="fa-solid fa-circle-check"></i> Tecnología solar, riego y drones</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section id="sectores">
+    <div class="section-title">
+        <h2>Sectores <span>Productivos</span></h2>
+        <p>Financiamos todos los pilares de la seguridad alimentaria colombiana.</p>
+    </div>
+    <div class="sectors-grid">
+        <div class="sector-card"><div class="sector-icon">🌱</div><h3>Agricultura</h3><p>Café, cacao, arroz, maíz, frutas, hortalizas, plátano, yuca, papa.</p></div>
+        <div class="sector-card"><div class="sector-icon">🐄</div><h3>Ganadería</h3><p>Producción lechera, carne bovina, ovina, caprina y cuero.</p></div>
+        <div class="sector-card"><div class="sector-icon">🐟</div><h3>Piscicultura</h3><p>Tilapia, trucha, camarón y peces de agua dulce.</p></div>
+        <div class="sector-card"><div class="sector-icon">🐷</div><h3>Porcícola</h3><p>Cerdo encaste, mestizo, lechón yChancho gordo.</p></div>
+        <div class="sector-card"><div class="sector-icon">🐔</div><h3>Avicultura</h3><p>Pollo parrillero, huevo, pavo y codorniz.</p></div>
+        <div class="sector-card"><div class="sector-icon">☀️</div><h3>Energía Solar</h3><p>Placas fotovoltaicas, bombas solares, secadores.</p></div>
+        <div class="sector-card"><div class="sector-icon">🤖</div><h3>Tecnología Agrícola</h3><p>Riego, drones, sensores IoT, automatización.</p></div>
+    </div>
+</section>
+
+<section id="tecnologia">
+    <div class="section-title">
+        <h2>Tecnología para el <span>Campo</span></h2>
+        <p>Innovación que reduce costos y aumenta la producción.</p>
+    </div>
+    <div class="tech-grid">
+        <div class="tech-card">
+            <h4>☀️ Energía Solar Rural</h4>
+            <p>Reduce costos operativos hasta un 40%. Créditos preferenciales para energía renovable.</p>
+            <ul><li>Paneles para bombeo de agua</li><li>Secado solar de café y cacao</li><li>Iluminación ganadera</li></ul>
+        </div>
+        <div class="tech-card">
+            <h4>💧 Riego Inteligente</h4>
+            <p>Aumenta productividad hasta 3x. Ahorra 60% de agua.</p>
+            <ul><li>Goteo automatizado</li><li>Aspersores de alta eficiencia</li><li>Bombas solares</li></ul>
+        </div>
+        <div class="tech-card">
+            <h4>🤖 Drones Agrícolas</h4>
+            <p>Monitorea cultivos desde el aire. Detecta plagas y optimiza insumos.</p>
+            <ul><li>Fumigación de precisión</li><li>Mapeo NDVI</li><li>Conteo de plantas</li></ul>
+        </div>
+        <div class="tech-card">
+            <h4>📡 Sensores IoT</h4>
+            <p>Monitorea en tiempo real desde tu celular.</p>
+            <ul><li>Temperatura y humedad</li><li>Cámaras de vigilancia</li><li>GPS para ganado</li></ul>
+        </div>
+    </div>
+</section>
+
+<section id="impacto">
+    <div class="section-title">
+        <h2>Nuestro <span>Impacto</span></h2>
+        <p>Cada crédito transforma vidas y alimenta familias.</p>
+    </div>
+    <div class="impact-grid">
+        <div class="impact-card"><div class="impact-num">2,000</div><div class="impact-label">Agricultores Registrados</div></div>
+        <div class="impact-card"><div class="impact-num">7</div><div class="impact-label">Sectores Productivos</div></div>
+        <div class="impact-card"><div class="impact-num">29</div><div class="impact-label">Departamentos</div></div>
+        <div class="impact-card"><div class="impact-num">15,000+</div><div class="impact-label">Toneladas/Año Producción</div></div>
+    </div>
+</section>
+
+<section id="datos">
+    <div class="section-title">
+        <h2>Datos <span>Interactivos</span></h2>
+        <p>Explora nuestra base de datos de créditos rurales colombianos.</p>
+    </div>
+    <div class="chart-grid">
+        <div class="chart-container">
+            <h3 style="color:var(--primary); margin-bottom:16px; font-family:var(--font-heading)">Distribución por Sector</h3>
+            <canvas id="chartSector"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 style="color:var(--primary); margin-bottom:16px; font-family:var(--font-heading)">Tasa Promedio por Sector</h3>
+            <canvas id="chartTasa"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 style="color:var(--primary); margin-bottom:16px; font-family:var(--font-heading)">Producción por Sector (Toneladas)</h3>
+            <canvas id="chartProduccion"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 style="color:var(--primary); margin-bottom:16px; font-family:var(--font-heading)">Impacto de Tecnología en Tasas</h3>
+            <canvas id="chartTech"></canvas>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <a href="#" class="footer-logo"><i class="fa-solid fa-seedling"></i> AgroCrédito Colombia</a>
+    <ul class="footer-links">
+        <li><a href="#mision">Misión</a></li>
+        <li><a href="#sectores">Sectores</a></li>
+        <li><a href="#tecnologia">Tecnología</a></li>
+        <li><a href="#impacto">Impacto</a></li>
+    </ul>
+    <p class="footer-text">© 2026 AgroCrédito Colombia. Seguridad Alimentaria y Créditos Rurales Inteligentes. Licencia MIT.</p>
+</footer>
+
+<script>
+    const colors = {
+        primary: '#10b981',
+        primaryLight: '#34d399',
+        accent: '#3b82f6',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        purple: '#8b5cf6',
+        pink: '#ec4899',
+        cyan: '#06b6d4'
+    };
+
+    new Chart(document.getElementById('chartSector'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Agricultura', 'Ganadería', 'Piscicultura', 'Porcícola', 'Avicultura', 'Energía Solar', 'Tecnología'],
+            datasets: [{
+                data: [30, 20, 15, 10, 8, 7, 10],
+                backgroundColor: [colors.primary, colors.accent, colors.cyan, colors.warning, colors.pink, colors.purple, colors.danger],
+                borderWidth: 0
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', padding: 12 } } } }
+    });
+
+    new Chart(document.getElementById('chartTasa'), {
+        type: 'bar',
+        data: {
+            labels: ['Agri.', 'Ganad.', 'Pisci.', 'Porcí.', 'Avic.', 'Solar', 'Tecno.'],
+            datasets: [{
+                label: 'Tasa % E.A.',
+                data: [16.2, 15.8, 17.1, 16.5, 15.9, 14.8, 14.2],
+                backgroundColor: [colors.primary, colors.accent, colors.cyan, colors.warning, colors.pink, colors.purple, colors.danger],
+                borderRadius: 8
+            }]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('chartProduccion'), {
+        type: 'bar',
+        data: {
+            labels: ['Agricultura', 'Ganadería', 'Piscicultura', 'Porcícola', 'Avicultura'],
+            datasets: [{
+                label: 'Toneladas/Año',
+                data: [6500, 3200, 1800, 1200, 950],
+                backgroundColor: colors.primary,
+                borderRadius: 8
+            }]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById('chartTech'), {
+        type: 'line',
+        data: {
+            labels: ['0 Tech', '1 Tech', '2 Tech', '3 Tech', '4 Tech', '5 Tech'],
+            datasets: [{
+                label: 'Tasa Promedio %',
+                data: [19.2, 17.8, 16.5, 15.3, 14.1, 13.2],
+                borderColor: colors.primary,
+                backgroundColor: 'rgba(16,185,129,0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: colors.primary,
+                pointRadius: 6
+            }]
+        },
+        options: { responsive: true, scales: { y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#9ca3af' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+    });
+</script>
+
+</body>
+</html>
